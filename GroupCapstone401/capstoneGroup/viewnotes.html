@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Notes</title>
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+<body>
+  <h2>View Notes</h2>
+  <input type="text" id="search" placeholder="Search notes">
+  <ul id="all-notes"></ul>
+
+  <script>
+    let notes = [];
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      const filtered = notes.filter(n => n.title.toLowerCase().includes(q));
+      render(filtered);
+    });
+
+    function render(data) {
+      const list = document.getElementById('all-notes');
+      list.innerHTML = '';
+      data.forEach(n => {
+        const li = document.createElement('li');
+        li.innerText = `${n.title}: ${n.content} (by ${n.email})`;
+        list.appendChild(li);
+      });
+    }
+
+    async function load() {
+      const res = await fetch('/api/notes');
+      notes = await res.json();
+      render(notes);
+    }
+
+    load();
+  </script>
+</body>
+</html>

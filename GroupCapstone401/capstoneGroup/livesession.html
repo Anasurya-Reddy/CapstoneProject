@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Sessions</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>Upload Live Session Link</h2>
+  <form id="session-form">
+    <input type="text" id="link" placeholder="Meeting Link" required><br>
+    <input type="datetime-local" id="time" required><br>
+    <button type="submit">Upload</button>
+  </form>
+
+  <ul id="sessions"></ul>
+
+  <script>
+    const email = localStorage.getItem('userEmail');
+
+    document.getElementById('session-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const link = document.getElementById('link').value;
+      const time = document.getElementById('time').value;
+      await fetch('/api/session', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, link, time })
+      });
+      load();
+    };
+
+    async function load() {
+      const res = await fetch('/api/sessions');
+      const data = await res.json();
+      const ul = document.getElementById('sessions');
+      ul.innerHTML = '';
+      data.forEach(s => {
+        const li = document.createElement('li');
+        li.innerText = `${s.link} at ${s.time}`;
+        ul.appendChild(li);
+      });
+    }
+
+    load();
+  </script>
+</body>
+</html>
